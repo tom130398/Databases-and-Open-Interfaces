@@ -1,0 +1,55 @@
+
+Customer's Name:<input type="text" id="name"></td></tr><br>
+Customer's Address:<input type="text" id="address"></td></tr><br>
+<button onClick="postCustomer()">Add Customer</button><br>
+<button onClick="editCustomer()">Edit Customer</button><br>
+<button onClick="deleteCustomer()">Delete Customer</button><br>
+
+Service's Name:<input type="text" id="Name"></td></tr><br>
+Service's Address:<input type="text" id="Address"></td></tr><br>
+<button onClick="postService()">Add Service</button><br>
+<button onClick="editService()">Edit Service</button><br>
+<button onClick="deleteService()">Delete Service</button><br>
+
+<script>
+function postCustomer(){
+ var customerName=document.getElementById("name");
+ var customerAddress=document.getElementById("address");
+ var jsonData = '{"Name":' + JSON.stringify(customerName.value) + ',"Address":' + JSON.stringify(customerAddress.value) + '}';
+ var request = new XMLHttpRequest();
+ request.open("POST", "http://localhost:8000/customers/", false);
+ request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+ request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+ request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+ request.send(jsonData); 
+ var array = JSON.parse(request.responseText);
+ console.log(array);
+}
+
+function postService(){
+ var serviceName=document.getElementById("Name");
+ var serviceAddress=document.getElementById("Address");
+ var jsonData1 = '{"Name":' + JSON.stringify(serviceName.value) + ',"Address":' + JSON.stringify(serviceAddress.value) + '}';
+ var request = new XMLHttpRequest();
+ request.open("POST", "http://localhost:8000/services/", false);
+ request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+ request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+ request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+ request.send(jsonData1); 
+ var array = JSON.parse(request.responseText);
+ console.log(array);
+}
+ 
+
+
+function readCookie(name) {
+ var nameEQ = encodeURIComponent(name) + "=";
+ var ca = document.cookie.split(';');
+ for (var i = 0; i < ca.length; i++) {
+ var c = ca[i];
+ while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+ if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+ }
+ return null;
+}
+</script>
