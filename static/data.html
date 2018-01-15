@@ -2,20 +2,33 @@
 Customer's Name:<input type="text" id="name"></td></tr><br>
 Customer's Address:<input type="text" id="address"></td></tr><br>
 <button onClick="postCustomer()">Add Customer</button><br>
-<button onClick="editCustomer()">Edit Customer</button><br>
-<button onClick="deleteCustomer()">Delete Customer</button><br>
+DELETE AND EDIT Customer:<select id="sel1"></select>
+<button onclick="deleteCustomer()">DELETE</button>
+<br>
+NEW Customer NAME:<br>
+<input type="text" id="name1"><br>
+New Customer Address:<br>
+<input type="text" id="address1"><br>
+<button onClick="editCustomer()">EDIT</button><br><br>
 
 Service's Name:<input type="text" id="Name"></td></tr><br>
 Service's Address:<input type="text" id="Address"></td></tr><br>
 <button onClick="postService()">Add Service</button><br>
-<button onClick="editService()">Edit Service</button><br>
-<button onClick="deleteService()">Delete Service</button><br>
+DELETE AND EDIT Service<select id="sel2"></select>
+<button onclick="deleteService()">DELETE</button>
+<br>
+NEW Service NAME:<br>
+<input type="text" id="Name1"><br>
+New Service Address:<br>
+<input type="text" id="Address1"><br>
+<button onClick="editService()">EDIT</button>
 
 <script>
+displayCustomer();
 function postCustomer(){
  var customerName=document.getElementById("name");
  var customerAddress=document.getElementById("address");
- var jsonData = '{"Name":' + JSON.stringify(customerName.value) + ',"Address":' + JSON.stringify(customerAddress.value) + '}';
+ var jsonData = '{"name":' + JSON.stringify(customerName.value) + ',"address":' + JSON.stringify(customerAddress.value) + '}';
  var request = new XMLHttpRequest();
  request.open("POST", "http://localhost:8000/customers/", false);
  request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
@@ -23,13 +36,15 @@ function postCustomer(){
  request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
  request.send(jsonData); 
  var array = JSON.parse(request.responseText);
+ displayCustomer();
  console.log(array);
 }
 
+displayService();
 function postService(){
  var serviceName=document.getElementById("Name");
  var serviceAddress=document.getElementById("Address");
- var jsonData1 = '{"Name":' + JSON.stringify(serviceName.value) + ',"Address":' + JSON.stringify(serviceAddress.value) + '}';
+ var jsonData1 = '{"name":' + JSON.stringify(serviceName.value) + ',"address":' + JSON.stringify(serviceAddress.value) + '}';
  var request = new XMLHttpRequest();
  request.open("POST", "http://localhost:8000/services/", false);
  request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
@@ -37,9 +52,106 @@ function postService(){
  request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
  request.send(jsonData1); 
  var array = JSON.parse(request.responseText);
+ displayService();
  console.log(array);
 }
- 
+
+function displayCustomer(){
+	var request = new XMLHttpRequest();
+	request.open("GET", "http://localhost:8000/customers/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	arrayCustomer = JSON.parse(request.responseText);
+	console.log(arrayCustomer);
+	var selectElement = document.getElementById("sel1");
+	var i, options="";
+	for(i = 0; i < arrayCustomer.length; i++)
+	{
+		options = options + "<option>" + arrayCustomer[i].name + "</option>";
+	}
+	selectElement.innerHTML = options;
+}
+
+displayCustomer();
+function editCustomer(){
+	var Name=document.getElementById("name1");
+	var Address=document.getElementById("address1");
+	var index = document.getElementById("sel1").selectedIndex;
+	var request = new XMLHttpRequest();
+	var url=""+arrayCustomer[index].url;
+	 var jsonData = '{"name":' + JSON.stringify(Name.value) + ',"address":' + JSON.stringify(Address.value) + '}';
+	request.open("PUT", url, false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send(jsonData);
+	displayCustomer();
+}
+
+function displayService(){
+	var request = new XMLHttpRequest();
+	request.open("GET", "http://localhost:8000/services/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	arrayService = JSON.parse(request.responseText);
+	var selectElement = document.getElementById("sel2");
+	var i, options="";
+	for(i = 0; i < arrayService.length; i++)
+	{
+		options = options + "<option>" + arrayService[i].name + "</option>";
+	}
+	selectElement.innerHTML = options;
+}
+
+
+function editService(){
+	var Name=document.getElementById("Name1");
+	var Address=document.getElementById("Address1");
+	var index = document.getElementById("sel2").selectedIndex;
+	var request = new XMLHttpRequest();
+	var url=""+arrayService[index].url;
+	 var jsonData = '{"name":' + JSON.stringify(Name.value) + ',"address":' + JSON.stringify(Address.value) + '}';
+	request.open("PUT", url, false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send(jsonData);
+	displayService();
+}
+
+
+function deleteCustomer(){
+var index = document.getElementById("sel1").selectedIndex;
+	var request = new XMLHttpRequest();
+	var name=arrayCustomer[index].name;
+	var url=""+arrayCustomer[index].url;
+	 var jsonData = '{"name":' + JSON.stringify(name) + '}';
+	request.open("DELETE", url, false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send(jsonData);
+	displayCustomer();
+}
+
+
+function deleteService(){
+var index = document.getElementById("sel2").selectedIndex;
+	var request = new XMLHttpRequest();
+	var name=arrayService[index].name;
+	var url=""+arrayService[index].url;
+	 var jsonData = '{"name":' + JSON.stringify(name) + '}';
+	request.open("DELETE", url, false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send(jsonData);
+	displayService();
+}
 
 
 function readCookie(name) {

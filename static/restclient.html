@@ -1,20 +1,63 @@
-upGroup name:<br>
-<input type="text" id="group"><button onClick="postGroup()">Add group</button>
 <script>
-function postGroup(){
- var groupName=document.getElementById("group");
- var jsonData = '{"name":' + JSON.stringify(groupName.value) + '}';
- var request = new XMLHttpRequest();
- request.open("POST", "http://localhost:8000/groups/", false);
- request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
- request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
- request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
- request.send(jsonData); 
- var array = JSON.parse(request.responseText);
- console.log(array);
- document.getElementById("id1").innerHTML= "Group added<br><br>";
+var array;
+function init()
+{
+	var request = new XMLHttpRequest();
+	request.open("GET", "http://localhost:8000/groups/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	array = JSON.parse(request.responseText);
+	var selectElement = document.getElementById("sel");
+	var i, options="";
+	for(i = 0; i < array.length; i++)
+	{
+		options = options + "<option>" + array[i].name + "</option>";
+	}
+	selectElement.innerHTML = options;
+	//selectElement.onchange = display;
+	//console.log(array);
 }
- 
+function putGroup()
+{
+	var Name=document.getElementById("name");
+	var index = document.getElementById("sel").selectedIndex;
+	var request = new XMLHttpRequest();
+	var url=""+array[index].url;
+	var jsonData = '{"name":' + JSON.stringify(Name.value) + '}';
+	request.open("PUT", url, false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send(jsonData);
+	init();
+}
+function deleteGroup()
+{
+	var index = document.getElementById("sel").selectedIndex;
+	var request = new XMLHttpRequest();
+	var name=array[index].name;
+	var url=""+array[index].url;
+	var jsonData = '{"name":' + JSON.stringify(name) + '}';
+	request.open("DELETE", url, false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send(jsonData);
+	init();
+} 
+function postGroup(){
+	var groupName=document.getElementById("group");
+	var jsonData = '{"name":' + JSON.stringify(groupName.value) + '}';
+	var request = new XMLHttpRequest();
+	request.open("POST", "http://localhost:8000/groups/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send(jsonData); 
+	init();
+}
 function readCookie(name) {
  var nameEQ = encodeURIComponent(name) + "=";
  var ca = document.cookie.split(';');
@@ -25,4 +68,16 @@ function readCookie(name) {
  }
  return null;
 }
+window.onload = init;
 </script>
+<body>
+Group name:<br>
+<input type="text" id="group"><button onClick="postGroup()">Add group</button>
+<br>
+<p>DELETE AND EDIT GROUP</p>
+<select id="sel"></select>
+<button onclick="deleteGroup()">DELETE</button>
+<br>
+NEW GROUP NAME:<br>
+<input type="text" id="name"><button onClick="putGroup()">EDIT NAME</button>
+</body>
