@@ -69,7 +69,7 @@ function displayCustomer(){
 	var i, options="";
 	for(i = 0; i < arrayCustomer.length; i++)
 	{
-		options = options + "<option>" + arrayCustomer[i].name + "</option>";
+		options = options + "<option>" + arrayCustomer[i].name + "/" + arrayCustomer[i].address + "</option>";
 	}
 	selectElement.innerHTML = options;
 }
@@ -102,7 +102,7 @@ function displayService(){
 	var i, options="";
 	for(i = 0; i < arrayService.length; i++)
 	{
-		options = options + "<option>" + arrayService[i].name + "</option>";
+		options = options + "<option>" + arrayService[i].name + "/" + arrayService[i].address + "</option>";
 	}
 	selectElement.innerHTML = options;
 }
